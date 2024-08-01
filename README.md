@@ -153,5 +153,23 @@ Then access the flag.txt from Veracrypt volume and submit
  
 
 
+________________________________________________________________________________________________________________________________________
 
+
+Resources-
+
+1. https://chirag-singla.notion.site/CEH-Practical-Preparation-7f2b77651cd144e8872f2f5a30155052
+2. https://github.com/CyberSecurityUP/Guide-CEH-Practical-Master
+3. https://github.com/TheCyberpunker/CEH-Practical-Notes/blob/main/8%20-%20CEH-Notes.md
+4. https://github.com/System-CTL/CEH_CHEAT_SHEET
+5. https://ceh-practical.cavementech.com/
+6. https://github.com/hunterxxx/CEH-v12-Practical
+7. https://github.com/cmuppin/CEH
+8. https://github.com/Samsar4/Ethical-Hacking-Labs
+9. https://github.com/scriptkkiddie/CEH-Practical-Resources-Learning-Tutorials-Certified-Ethical-Hacker?tab=readme-ov-file
+10. https://github.com/xaferima/Certified-Ethical-Hacking-Practical-Tools/tree/main/Labs-pdf
+11. https://github.com/dhabaleshwar/CEHPractical/tree/main
+12. https://cheat.sh/
+13. https://hashes.com/en/decrypt/hash
+14. https://emn178.github.io/online-tools/
 
